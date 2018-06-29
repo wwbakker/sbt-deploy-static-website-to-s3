@@ -17,13 +17,10 @@ object DeployStaticWebsiteToS3Plugin extends AutoPlugin {
   import autoImport._
   lazy val baseDeployStaticWebsiteToS3Settings: Seq[Def.Setting[_]] = Seq(
     bucketName := None,
-    baseDeployStaticWebsiteToS3Settings := DeployStaticWebsiteToS3Action((stage).value)
+    deployStaticWebsiteToS3 := DeployStaticWebsiteToS3Action(stage.value)
 
   )
   // Should this be in its own configuration, or should we reuse another one (e.g. SbtWeb)?
-  override lazy val projectSettings = inConfig(DeployStaticWebsiteToS3)(baseDeployStaticWebsiteToS3Settings)
+  override lazy val projectSettings : Seq[Def.Setting[_]] = inConfig(DeployStaticWebsiteToS3)(baseDeployStaticWebsiteToS3Settings)
 }
 
-object DeployStaticWebsiteToS3Action {
-  def apply(stagingDirectory : File) : Unit = ???
-}
