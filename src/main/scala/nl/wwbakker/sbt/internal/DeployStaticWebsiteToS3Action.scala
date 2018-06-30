@@ -2,8 +2,8 @@ package nl.wwbakker.sbt.internal
 
 import java.io.File
 
+import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.model.{DeleteObjectsRequest, S3ObjectSummary}
-import com.amazonaws.services.s3.{AmazonS3, AmazonS3ClientBuilder}
 import nl.wwbakker.sbt.internal.RelativePath._
 
 import scala.collection.JavaConverters._
@@ -22,7 +22,6 @@ trait DeployStaticWebsiteToS3Action {
   }
 
   def objectsInBucket(bucketName : String) : Seq[BucketKey] = {
-    val s3 = AmazonS3ClientBuilder.defaultClient()
     val bucketObjects : Seq[S3ObjectSummary] = s3.listObjectsV2(bucketName).getObjectSummaries.asScala
     bucketObjects.map(_.getKey)
   }
