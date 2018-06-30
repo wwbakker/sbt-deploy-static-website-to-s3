@@ -1,7 +1,8 @@
-package nl.wwbakker
+package nl.wwbakker.sbt
 
 import com.typesafe.sbt.web.Import.WebKeys._
 import com.typesafe.sbt.web.SbtWeb
+import sbt.Keys._
 import sbt._
 
 // info: https://www.scala-sbt.org/1.0/docs/Plugins-Best-Practices.html
@@ -17,7 +18,7 @@ object DeployStaticWebsiteToS3Plugin extends AutoPlugin {
   import autoImport._
   lazy val baseDeployStaticWebsiteToS3Settings: Seq[Def.Setting[_]] = Seq(
     bucketName := None,
-    deployStaticWebsiteToS3 := DeployStaticWebsiteToS3Action(stage.value)
+//    deployStaticWebsiteToS3 := DeployStaticWebsiteToS3Action(stage.value)
 
   )
   // Should this be in its own configuration, or should we reuse another one (e.g. SbtWeb)?

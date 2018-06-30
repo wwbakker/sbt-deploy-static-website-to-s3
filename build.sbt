@@ -3,6 +3,7 @@ description := "sbt plugin for deploying a static website to S3."
 organization := "nl.wwbakker"
 
 libraryDependencies += "com.amazonaws" % "aws-java-sdk-s3" % "1.11.356"
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 
 licenses += ("MIT License", url("http://opensource.org/licenses/MIT"))
 sbtPlugin := true
