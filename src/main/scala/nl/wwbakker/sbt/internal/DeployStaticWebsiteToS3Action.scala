@@ -3,8 +3,7 @@ package nl.wwbakker.sbt.internal
 import java.io.File
 
 import com.amazonaws.services.s3.AmazonS3
-import com.amazonaws.services.s3.model.{DeleteObjectsRequest, S3ObjectSummary}
-import nl.wwbakker.sbt.internal.RelativePath._
+import com.amazonaws.services.s3.model.DeleteObjectsRequest
 import nl.wwbakker.sbt.internal.exceptions.DeployStaticWebsiteToS3Exception
 import sbt.util.Logger
 
@@ -16,12 +15,21 @@ trait DeployStaticWebsiteToS3Action {
 
   def deploy(bucketName: String, stagingDirectory: File)(implicit logger: Logger): Unit = {
     val filesInStaging: Seq[RelativePath] = filesRelativeToStagingDirectory(stagingDirectory)
-    uploadObjects(bucketName, stagingDirectory, filesInStaging)
-    deleteObjects(bucketName, objectsInBucketButNotInStaging(objectsInBucket(bucketName), filesInStaging))
+    val objectsInS3Bucket : Seq[BucketObject] = objectsInBucket(bucketName)
+    val modifiedFilesInStaging = skipUnmodifiedObjects(filesInStaging, objectsInS3Bucket, stagingDirectory)
+    uploadObjects(bucketName, stagingDirectory, modifiedFilesInStaging)
+    deleteObjects(bucketName, objectsInBucketButNotInStaging(objectsInS3Bucket, filesInStaging))
   }
 
   def undeploy(bucketName: String)(implicit logger: Logger): Unit = {
     deleteObjects(bucketName, objectsInBucket(bucketName))
+  }
+
+  protected def skipUnmodifiedObjects(filesInStaging: Seq[RelativePath], objectsInS3Bucket : Seq[BucketObject], stagingDirectory: File)(implicit logger: Logger) : Seq[RelativePath] = {
+    val modifiedFilesInStaging : Seq[RelativePath] = modifiedFiles(objectsInS3Bucket, filesInStaging, stagingDirectory)
+    val unmodifiedFiles = filesInStaging.diff(modifiedFilesInStaging)
+    unmodifiedFiles.foreach(relativePath => logger.info(s"Skipped ${relativePath.bucketKey} as nothing has changed."))
+    modifiedFilesInStaging
   }
 
   protected def uploadObjects(bucketName: String, baseDirectory: File, files: Seq[RelativePath])(implicit logger: Logger): Unit =
@@ -39,11 +47,11 @@ trait DeployStaticWebsiteToS3Action {
         throw new DeployStaticWebsiteToS3Exception(errorMessage, e)
     }
 
-  protected def deleteObjects(bucketName: String, keys: Seq[BucketKey])(implicit logger: Logger): Unit =
-    if (keys.nonEmpty)
-      Try(s3.deleteObjects(new DeleteObjectsRequest(bucketName).withKeys(keys.toArray: _*))) match {
-        case Success(_) if keys.nonEmpty =>
-          logger.info(s"${keys.length} objects deleted from S3. ")
+  protected def deleteObjects(bucketName: String, bucketObjects: Seq[BucketObject])(implicit logger: Logger): Unit =
+    if (bucketObjects.nonEmpty)
+      Try(s3.deleteObjects(new DeleteObjectsRequest(bucketName).withKeys(bucketObjects.map(_.key).toArray: _*))) match {
+        case Success(_) if bucketObjects.nonEmpty =>
+          logger.info(s"${bucketObjects.length} objects deleted from S3. ")
         case Success(_) =>
           logger.info(s"No files to delete from S3 bucket.")
         case Failure(e) =>
@@ -55,8 +63,9 @@ trait DeployStaticWebsiteToS3Action {
       logger.info("No objects in the S3 bucket to delete.")
 
 
-  protected def objectsInBucket(bucketName: String)(implicit logger: Logger): Seq[BucketKey] = {
-    Try(s3.listObjectsV2(bucketName).getObjectSummaries.asScala.map(_.getKey)) match {
+
+  protected def objectsInBucket(bucketName: String)(implicit logger: Logger): Seq[BucketObject] = {
+    Try(s3.listObjectsV2(bucketName).getObjectSummaries.asScala.map(summary => BucketObject(summary.getKey, summary.getETag))) match {
       case Success(result) => result
       case Failure(e) =>
         val errorMessage = s"Error while listing object from S3 bucket '$bucketName'"
@@ -68,8 +77,16 @@ trait DeployStaticWebsiteToS3Action {
   protected def filesRelativeToStagingDirectory(stagingDirectory: File): Seq[RelativePath] =
     listRecursively(stagingDirectory).map(RelativePath(stagingDirectory, _))
 
-  protected def objectsInBucketButNotInStaging(objectsInBucket: Seq[BucketKey], filesInStaging: Seq[RelativePath]): Seq[BucketKey] =
-    objectsInBucket.filter(bucketKey => !filesInStaging.exists(_.bucketKey == bucketKey))
+  protected def objectsInBucketButNotInStaging(objectsInBucket: Seq[BucketObject], filesInStaging: Seq[RelativePath]): Seq[BucketObject] =
+    objectsInBucket.filter(bucketObject => !filesInStaging.exists(_.bucketKey == bucketObject.key))
+
+  protected def modifiedFiles(objectsInBucket: Seq[BucketObject], filesInStaging: Seq[RelativePath], baseDirectory : File) : Seq[RelativePath] =
+    filesInStaging
+      .zip(filesInStaging.map(relativePath => Md5Hash.computeHash(relativePath.file(baseDirectory))))
+      .filter{
+        case (relativePath, hash) =>
+          !objectsInBucket.exists(bucketObject => bucketObject.key == relativePath.bucketKey && bucketObject.hash.toLowerCase == hash)}
+      .map(_._1)
 
   private def listRecursively(file: File): List[File] =
     if (file.isFile)

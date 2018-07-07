@@ -2,6 +2,7 @@ name := "sbt-deploy-static-website-to-s3"
 description := "sbt plugin for deploying a static website to S3."
 organization := "nl.wwbakker"
 
+
 libraryDependencies += "com.amazonaws" % "aws-java-sdk-s3" % "1.11.356"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 
@@ -10,7 +11,7 @@ sbtPlugin := true
 publishMavenStyle := false
 bintrayRepository := "sbt-plugins"
 // Set to a -SNAPSHOT version when running scripted, non-snapshot version to release.
-version := "1.1-SNAPSHOT"
+version := "1.2-SNAPSHOT"
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-web" % "1.4.3")
 
