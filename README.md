@@ -10,7 +10,7 @@ An sbt plugin for deploying a static website to s3 programmatically.
 - In `[yoursbtproject]/project/plugins.sbt` add the following:
 ```sbt
 resolvers += Resolver.bintrayIvyRepo("wwbakker", "sbt-plugins")
-addSbtPlugin("nl.wwbakker" % "sbt-deploy-static-website-to-s3" % "1.1")
+addSbtPlugin("nl.wwbakker" % "sbt-deploy-static-website-to-s3" % "1.2")
 // Add sbt-web if it isn't added to your project already.
 addSbtPlugin("com.typesafe.sbt" % "sbt-web" % "1.4.3")
 ```
