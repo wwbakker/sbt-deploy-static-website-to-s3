@@ -20,3 +20,12 @@ scriptedLaunchOpts := { scriptedLaunchOpts.value ++
   Seq("-Xmx1024M", "-Dplugin.version=" + version.value)
 }
 scriptedBufferLog := false
+
+// To publish/release:
+// - Run `scripted` in sbt to test
+// - Change version to non-snapshot version
+// - Run `publishSigned` to create a local staging bundle
+// - Run `sonatypeBundleRelease` to release
+// - Fill in the gpg key.
+// - Change back the version to the next -SNAPSHOT version
+// - Commit code.
