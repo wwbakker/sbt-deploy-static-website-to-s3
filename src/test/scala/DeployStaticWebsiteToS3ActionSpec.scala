@@ -1,11 +1,11 @@
 import java.io.File
 import java.nio.file.Paths
-
 import com.amazonaws.services.s3.AmazonS3
 import nl.wwbakker.sbt.internal.{BucketObject, DeployStaticWebsiteToS3Action, RelativePath}
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class DeployStaticWebsiteToS3ActionSpec extends FlatSpec with Matchers {
+class DeployStaticWebsiteToS3ActionSpec extends AnyFlatSpec with Matchers {
 
   object TestDeployStaticWebsiteToS3Action extends DeployStaticWebsiteToS3Action {
     def s3: AmazonS3 = null

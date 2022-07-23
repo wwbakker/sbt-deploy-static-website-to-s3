@@ -1,1 +1,4 @@
+> deploy-static-website-to-s3:createS3Bucket
 > deploy-static-website-to-s3:deployToS3
+> deploy-static-website-to-s3:undeployFromS3
+> deploy-static-website-to-s3:deleteS3Bucket

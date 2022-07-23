@@ -4,4 +4,4 @@ lazy val root = (project in file("."))
     organization := "nl.wwbakker"
   ).enablePlugins(SbtWeb)
 
-(bucketName in DeployStaticWebsiteToS3) := Some("deployplugintest")
+DeployStaticWebsiteToS3 / bucketName := Some("deployplugintest")

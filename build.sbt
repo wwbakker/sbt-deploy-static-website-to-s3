@@ -3,8 +3,8 @@ description := "sbt plugin for deploying a static website to S3."
 organization := "nl.wwbakker"
 
 
-libraryDependencies += "com.amazonaws" % "aws-java-sdk-s3" % "1.11.356"
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % "test"
+libraryDependencies += "com.amazonaws" % "aws-java-sdk-s3" % "1.12.239"
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.12" % "test"
 
 enablePlugins(ScriptedPlugin)
 
@@ -15,7 +15,7 @@ bintrayRepository := "sbt-plugins"
 // Set to a -SNAPSHOT version when running scripted, non-snapshot version to release.
 version := "1.3-SNAPSHOT"
 
-addSbtPlugin("com.typesafe.sbt" % "sbt-web" % "1.4.3")
+addSbtPlugin("com.typesafe.sbt" % "sbt-web" % "1.4.4")
 
 scriptedLaunchOpts := { scriptedLaunchOpts.value ++
   Seq("-Xmx1024M", "-Dplugin.version=" + version.value)

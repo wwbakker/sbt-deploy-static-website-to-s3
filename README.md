@@ -12,7 +12,7 @@ An sbt plugin for deploying a static website to s3 programmatically.
 resolvers += Resolver.bintrayIvyRepo("wwbakker", "sbt-plugins")
 addSbtPlugin("nl.wwbakker" % "sbt-deploy-static-website-to-s3" % "1.2")
 // Add sbt-web if it isn't added to your project already.
-addSbtPlugin("com.typesafe.sbt" % "sbt-web" % "1.4.3")
+addSbtPlugin("com.typesafe.sbt" % "sbt-web" % "1.4.4")
 ```
 - SbtWeb needs to be enabled. When SbtWeb is enabled, this plugin's
  tasks will be automatically made available. To enable SbtWeb, add `.enablePlugins(SbtWeb)` to your `build.sbt`:
@@ -28,11 +28,11 @@ lazy val root = (project in file("."))
 // Configure your bucket name here. The bucketname will be visible in the URL.
 // When you want to use S3 to host a website from your domain, be sure to mirror
 // the domain name in your bucket name
-(bucketName in DeployStaticWebsiteToS3) := Some("www.mywebsite.com")
+DeployStaticWebsiteToS3 / bucketName := Some("www.mywebsite.com")
 // OPTIONAL: default is index.html
-(indexDocument in DeployStaticWebsiteToS3) := "index.html"
+DeployStaticWebsiteToS3 / indexDocument := "index.html"
 // OPTIONAL: default is unset
-(errorDocument in DeployStaticWebsiteToS3) := "error.html"
+DeployStaticWebsiteToS3 / errorDocument := "error.html"
 ```
 
 ## Deploying your website
