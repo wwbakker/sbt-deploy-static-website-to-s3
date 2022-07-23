@@ -1,7 +1,8 @@
 name := "sbt-deploy-static-website-to-s3"
 description := "sbt plugin for deploying a static website to S3."
 organization := "nl.wwbakker"
-
+// Set to a -SNAPSHOT version when running scripted, non-snapshot version to release.
+version := "1.4-SNAPSHOT"
 
 libraryDependencies += "com.amazonaws" % "aws-java-sdk-s3" % "1.12.239"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.12" % "test"
@@ -10,10 +11,8 @@ enablePlugins(ScriptedPlugin)
 
 licenses += ("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0.html"))
 sbtPlugin := true
-publishMavenStyle := false
-bintrayRepository := "sbt-plugins"
-// Set to a -SNAPSHOT version when running scripted, non-snapshot version to release.
-version := "1.3-SNAPSHOT"
+licenses := Seq("APL2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
+// See sonatype.sbt for sonatype specific settings
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-web" % "1.4.4")
 
